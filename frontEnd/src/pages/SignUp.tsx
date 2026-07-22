@@ -1,15 +1,14 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Mail, Lock, User, Phone } from "lucide-react";
-import { toast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/use-toast"; // Fixed: Lovable toast custom hook wrapper
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import axios from "axios";
 
-
-
 const SignUp = () => {
   const navigate = useNavigate();
+  const { toast } = useToast(); // Hook initialization for toast
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     fullName: "",
@@ -64,39 +63,38 @@ const SignUp = () => {
     return isValid;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
+  const handleSignUp = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-  if (!validateForm()) return;
+    if (!validateForm()) return;
 
-  try {
-    const res = await axios.post(
-      "http://localhost:5000/api/auth/register",
-      {
-        name: formData.fullName,
-        email: formData.email,
-        password: formData.password,
-        phone: formData.phone,
-      }
-    );
+    try {
+      const res = await axios.post(
+        "http://localhost:5000/api/auth/register",
+        {
+          name: formData.fullName,
+          email: formData.email,
+          password: formData.password,
+          phone: formData.phone,
+        }
+      );
 
-    toast({
-      title: "Registration Successful 🎉",
-      description: "User created successfully!",
-    });
+      toast({
+        title: "Registration Successful 🎉",
+        description: "User created successfully!",
+      });
 
-    console.log(res.data);
+      console.log(res.data);
+      navigate("/login");
 
-    navigate("/login"); // better redirect to login
-
-  } catch (error: any) {
-    toast({
-      title: "Registration Failed",
-      description: error.response?.data?.message || "Something went wrong",
-      variant: "destructive",
-    });
-  }
-};
+    } catch (error: any) {
+      toast({
+        title: "Registration Failed",
+        description: error.response?.data?.message || "Something went wrong",
+        variant: "destructive",
+      });
+    }
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -123,7 +121,7 @@ const SignUp = () => {
                 </p>
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-5">
+              <form onSubmit={handleSignUp} className="space-y-5">
                 <div>
                   <label className="block text-sm font-medium text-foreground mb-2">
                     Full Name
@@ -136,7 +134,7 @@ const SignUp = () => {
                       value={formData.fullName}
                       onChange={handleChange}
                       placeholder="Enter your full name"
-                      className="input-styled pl-11"
+                      className="input-styled pl-11 w-full"
                     />
                   </div>
                   {errors.fullName && (
@@ -156,7 +154,7 @@ const SignUp = () => {
                       value={formData.email}
                       onChange={handleChange}
                       placeholder="Enter your email"
-                      className="input-styled pl-11"
+                      className="input-styled pl-11 w-full"
                     />
                   </div>
                   {errors.email && (
@@ -176,7 +174,7 @@ const SignUp = () => {
                       value={formData.password}
                       onChange={handleChange}
                       placeholder="Create a password"
-                      className="input-styled pl-11 pr-11"
+                      className="input-styled pl-11 pr-11 w-full"
                     />
                     <button
                       type="button"
@@ -203,7 +201,7 @@ const SignUp = () => {
                       value={formData.phone}
                       onChange={handleChange}
                       placeholder="Enter your phone number"
-                      className="input-styled pl-11"
+                      className="input-styled pl-11 w-full"
                     />
                   </div>
                   {errors.phone && (
@@ -213,7 +211,7 @@ const SignUp = () => {
 
                 <button
                   type="submit"
-                  className="w-full py-4 rounded-lg btn-gradient text-lg"
+                  className="w-full py-4 rounded-lg btn-gradient text-lg font-medium text-white"
                 >
                   Create Account
                 </button>

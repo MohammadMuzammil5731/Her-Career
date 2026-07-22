@@ -1,13 +1,14 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
-import { toast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/use-toast"; // Fixed: Lovable toast custom hook wrapper
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import axios from "axios";
 
 const Login = () => {
   const navigate = useNavigate();
+  const { toast } = useToast(); // Hook initialization for toast
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
@@ -41,40 +42,41 @@ const Login = () => {
     setErrors(newErrors);
     return isValid;
   };
-const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
 
-  if (!validateForm()) return;
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-  try {
-    const res = await axios.post(
-      "http://localhost:5000/api/auth/login",
-      {
-        email: formData.email,
-        password: formData.password,
-      }
-    );
+    if (!validateForm()) return;
 
-    // Save token
-    localStorage.setItem("token", res.data.token);
+    try {
+      const res = await axios.post(
+        "http://localhost:5000/api/auth/login",
+        {
+          email: formData.email,
+          password: formData.password,
+        }
+      );
 
-    toast({
-      title: "Login Successful 🎉",
-      description: "Welcome back!",
-    });
+      // Save token to localStorage
+      localStorage.setItem("token", res.data.token);
 
-    console.log("Token:", res.data.token);
+      toast({
+        title: "Login Successful 🎉",
+        description: "Welcome back!",
+      });
 
-    navigate("/jobs");
+      console.log("Token:", res.data.token);
 
-  } catch (error: any) {
-    toast({
-      title: "Login Failed",
-      description: error.response?.data?.msg || "Invalid credentials",
-      variant: "destructive",
-    });
-  }
-};
+      navigate("/jobs");
+
+    } catch (error: any) {
+      toast({
+        title: "Login Failed",
+        description: error.response?.data?.message || error.response?.data?.msg || "Invalid credentials",
+        variant: "destructive",
+      });
+    }
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -114,7 +116,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                       value={formData.email}
                       onChange={handleChange}
                       placeholder="Enter your email"
-                      className="input-styled pl-11"
+                      className="input-styled pl-11 w-full"
                     />
                   </div>
                   {errors.email && (
@@ -134,7 +136,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                       value={formData.password}
                       onChange={handleChange}
                       placeholder="Enter your password"
-                      className="input-styled pl-11 pr-11"
+                      className="input-styled pl-11 pr-11 w-full"
                     />
                     <button
                       type="button"
@@ -151,7 +153,7 @@ const handleSubmit = async (e: React.FormEvent) => {
 
                 <button
                   type="submit"
-                  className="w-full py-4 rounded-lg btn-gradient text-lg"
+                  className="w-full py-4 rounded-lg btn-gradient text-lg font-medium text-white"
                 >
                   Sign In
                 </button>
